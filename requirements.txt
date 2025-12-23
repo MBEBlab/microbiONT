@@ -1,0 +1,10 @@
+streamlit
+streamlit-option-menu
+pandas
+requests
+pillow
+pysam
+flatten_dict
+biopython
+tqdm
+numpy
