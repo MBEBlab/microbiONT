@@ -1,13 +1,10 @@
-# 忽略 Python 編譯檔
 __pycache__/
 *.py[cod]
 
-# 忽略虛擬環境
 venv/
 .venv/
 env/
 
-# 忽略執行過程的資料 (保護隱私，也不要塞爆 GitHub)
 *.pod5
 *.bam
 *.fastq
@@ -27,18 +24,8 @@ qc_assembly_quast/
 NanoStats.txt
 *.log
 log.txt
-
-# 忽略系統檔案
 .DS_Store
-
-# 忽略打包好的工具資料夾 (這我們要放在 Release，不放在 Code 裡)
-# 如果你的 bin 資料夾很小(小於100MB)且你想直接同步，可以把下面這行刪掉
-bin/
-*.zip
-*.zip
 microbiONT_Linux.zip
-emu_db/
-bin/
 microbiONT_env/
 __pycache__/
 .DS_Store
