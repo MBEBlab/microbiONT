@@ -9,7 +9,7 @@ import sys
 parser = argparse.ArgumentParser(description='MicrobiONT Post-Processing')
 parser.add_argument('-i', '--input_dir', required=True, help='Emu output directory')
 parser.add_argument('-d', '--db_dir', required=True, help='Emu Database directory')
-parser.add_argument("-o", "--outdir", help="Output directory", default="converted_results")
+parser.add_argument("-o", "--outdir", help="Output directory", default="converted_out")
 parser.add_argument('--ma', action='store_true', help='Output MicrobiomeAnalyst files')
 parser.add_argument('--picrust', action='store_true', help='Output PICRUSt2 files')
 parser.add_argument('--faprotax', action='store_true', help='Output FAPROTAX files')
@@ -23,24 +23,29 @@ def run_post_processing():
     print(f" DB: {args.db_dir}")
 
     emu_output_dir = args.input_dir
+    output_dir = args.outdir
     db_path = args.db_dir
-    
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        print(f" Created output directory: {output_dir}")
    
     input_emu_file = os.path.join(emu_output_dir, "emu-combined-tax_id-counts.tsv")
     input_fasta_db = os.path.join(db_path, "species_taxid.fasta")
     
-    out_ma_otu = os.path.join(emu_output_dir, "MA_OTU_table.txt")
-    out_ma_tax = os.path.join(emu_output_dir, "MA_Taxonomy_table.txt")
-    out_ma_tree = os.path.join(emu_output_dir, "MA_phylogeny.nwk")
-    out_faprotax = os.path.join(emu_output_dir, "FAPROTAX_input.txt")
-    out_picrust_table = os.path.join(emu_output_dir, "picrust2_counts.txt")
-    out_picrust_fasta = os.path.join(emu_output_dir, "picrust2_reps.fasta")
-    temp_alignment = os.path.join(emu_output_dir, "temp_alignment.fasta")
+    out_ma_otu = os.path.join(output_dir, "MA_OTU_table.txt")
+    out_ma_tax = os.path.join(output_dir, "MA_Taxonomy_table.txt")
+    out_ma_tree = os.path.join(output_dir, "MA_phylogeny.nwk")
+    out_faprotax = os.path.join(output_dir, "FAPROTAX_input.txt")
+    out_picrust_table = os.path.join(output_dir, "picrust2_counts.txt")
+    out_picrust_fasta = os.path.join(output_dir, "picrust2_reps.fasta")
+    temp_alignment = os.path.join(output_dir, "temp_alignment.fasta")
 
     if not os.path.exists(input_emu_file):
         print(f"Error: Emu output file not found: {input_emu_file}")
+        if os.path.exists(emu_output_dir):
+            print(f"Contents of {emu_output_dir}: {os.listdir(emu_output_dir)}")
         sys.exit(1)
-
+        
     
     if args.ma or args.faprotax or args.picrust or args.tree:
         print(" Processing Taxonomy Table...")
@@ -147,7 +152,7 @@ def run_post_processing():
                    
                     os.environ["PATH"] += os.pathsep + bin_dir
                     
-                    if shutil.which("mafft"):
+                    if shutil.which("mafft") and shutil.which("FastTree"):
                         cmd_align = f"mafft --auto --quiet {out_picrust_fasta} > {temp_alignment}"
                         subprocess.run(cmd_align, shell=True, check=True)
                         
