@@ -596,7 +596,7 @@ with st.sidebar:
                     cmds.append(loop_cmd)
                     # ✅ FIXED: Reverted to tax_id --counts
                     cmds.append(f"emu combine-outputs \"{emu_out}\" tax_id --counts") 
-                    cmds.append(f"echo 'Starting Post-Processing...' && python3 post_process.py -i {emu_out} -d {db_path} --ma")
+                    cmds.append(f"echo 'Starting Post-Processing...' && python3 post_process.py -i {emu_out} -o conversion_out -d {db_path} --ma")
                     
                     full_cmd = " && ".join(cmds)
                     st.session_state.messages.append({"role": "assistant", "type": "text", "content": f"**16S Full Pipeline Started**\nDatabase: `{db_name}`"})
@@ -625,7 +625,7 @@ with st.sidebar:
                     cmds.append(loop_cmd)
                     # ✅ FIXED: Reverted to tax_id --counts
                     cmds.append(f"emu combine-outputs \"{emu_out}\" tax_id --counts") 
-                    cmds.append(f"echo 'Starting Post-Processing...' && python3 post_process.py -i {emu_out} -d {db_path} --ma")
+                    cmds.append(f"echo 'Starting Post-Processing...' && python3 post_process.py -i {emu_out} -o conversion_out -d {db_path} --ma")
                     
                     full_cmd = " && ".join(cmds)
                     st.session_state.messages.append({"role": "assistant", "type": "text", "content": f"**18S Full Pipeline Started**\nDatabase: `{db_name}`"})
