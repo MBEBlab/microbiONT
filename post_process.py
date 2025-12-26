@@ -4,8 +4,9 @@ import shutil
 import argparse
 import subprocess
 import sys
+import platform  
 
-
+# Argument Parsing
 parser = argparse.ArgumentParser(description='MicrobiONT Post-Processing')
 parser.add_argument('-i', '--input_dir', required=True, help='Emu output directory')
 parser.add_argument('-d', '--db_dir', required=True, help='Emu Database directory')
@@ -20,18 +21,20 @@ args = parser.parse_args()
 def run_post_processing():
     print(f"\n[MicrobiONT] Starting Post-processing...")
     print(f" Input: {args.input_dir}")
-    print(f" DB: {args.db_dir}")
-
+    print(f" Output: {args.outdir}")
+    
     emu_output_dir = args.input_dir
     output_dir = args.outdir
     db_path = args.db_dir
+    
+   
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-        print(f" Created output directory: {output_dir}")
-   
+    
     input_emu_file = os.path.join(emu_output_dir, "emu-combined-tax_id-counts.tsv")
     input_fasta_db = os.path.join(db_path, "species_taxid.fasta")
     
+    # Output file paths
     out_ma_otu = os.path.join(output_dir, "MA_OTU_table.txt")
     out_ma_tax = os.path.join(output_dir, "MA_Taxonomy_table.txt")
     out_ma_tree = os.path.join(output_dir, "MA_phylogeny.nwk")
@@ -42,19 +45,15 @@ def run_post_processing():
 
     if not os.path.exists(input_emu_file):
         print(f"Error: Emu output file not found: {input_emu_file}")
-        if os.path.exists(emu_output_dir):
-            print(f"Contents of {emu_output_dir}: {os.listdir(emu_output_dir)}")
         sys.exit(1)
-        
-    
+
+    # --- 1. Processing Taxonomy Table ---
     if args.ma or args.faprotax or args.picrust or args.tree:
         print(" Processing Taxonomy Table...")
         try:
             df = pd.read_csv(input_emu_file, sep='\t')
-            
             df['tax_id'] = df['tax_id'].astype(str).str.replace(r'\.0$', '', regex=True)
             df['tax_id'] = 'tax_' + df['tax_id']
-            
             
             tax_ranks = ['superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
             rank_prefixes = {'superkingdom': 'k', 'phylum': 'p', 'class': 'c', 'order': 'o', 'family': 'f', 'genus': 'g', 'species': 's'}
@@ -79,7 +78,6 @@ def run_post_processing():
             df[tax_ranks] = df[tax_ranks].apply(format_taxonomy, axis=1)
             
             if args.ma:
-                # MA Files
                 ma_otu = df[['tax_id'] + sample_cols].copy()
                 ma_otu.rename(columns={'tax_id': '#NAME'}, inplace=True)
                 ma_otu.to_csv(out_ma_otu, sep='\t', index=False)
@@ -105,7 +103,7 @@ def run_post_processing():
             print(f"Error processing table: {e}")
             sys.exit(1)
 
-    
+    # --- 2. Sequence Extraction & Tree Building ---
     if args.picrust or args.tree:
         print(" Extracting Sequences...")
         if not os.path.exists(input_fasta_db):
@@ -144,25 +142,56 @@ def run_post_processing():
                             found_count += 1
                 print(f"   ✅ Extracted {found_count} sequences.")
 
-                
+                # === Tree Building Logic (Multi-OS Support) ===
                 if args.tree:
                     print("Building Phylogenetic Tree (MAFFT + FastTree)...")
-                   
-                    bin_dir = os.path.join(os.getcwd(), "bin")
-                   
-                    os.environ["PATH"] += os.pathsep + bin_dir
                     
-                    if shutil.which("mafft") and shutil.which("FastTree"):
-                        cmd_align = f"mafft --auto --quiet {out_picrust_fasta} > {temp_alignment}"
+                    bin_dir = os.path.join(os.getcwd(), "bin")
+                    current_os = platform.system()
+                    
+                  
+                    mafft_exe = None
+                    
+                    if current_os == "Linux":
+                    
+                        mafft_candidate = os.path.join(bin_dir, "mafft_linux", "bin", "mafft")
+                        if os.path.exists(mafft_candidate):
+                            mafft_exe = mafft_candidate
+                            
+                    elif current_os == "Darwin":
+                      
+                        mafft_candidate = os.path.join(bin_dir, "mafft_mac", "mafft.bat")
+                        if os.path.exists(mafft_candidate):
+                            mafft_exe = mafft_candidate
+                         
+                            subprocess.run(f"chmod +x \"{mafft_exe}\"", shell=True)
+
+                    if not mafft_exe:
+                        mafft_exe = shutil.which("mafft")
+
+                    fasttree_exe = shutil.which("FastTree")
+                    if not fasttree_exe:
+                        fasttree_exe = os.path.join(bin_dir, "FastTree")
+
+                   
+                    if mafft_exe and fasttree_exe:
+                        print(f"   OS: {current_os}")
+                        print(f"   Using MAFFT: {mafft_exe}")
+                        
+                        
+                        cmd_align = f"\"{mafft_exe}\" --auto --quiet {out_picrust_fasta} > {temp_alignment}"
                         subprocess.run(cmd_align, shell=True, check=True)
                         
-                        cmd_tree = f"FastTree -gtr -nt {temp_alignment} > {out_ma_tree}"
+                        cmd_tree = f"\"{fasttree_exe}\" -gtr -nt {temp_alignment} > {out_ma_tree}"
                         subprocess.run(cmd_tree, shell=True, check=True)
                         
                         print(f"   ✅ Tree generated: {out_ma_tree}")
                         if os.path.exists(temp_alignment): os.remove(temp_alignment)
                     else:
-                        print("❌ mafft or FastTree not found in PATH or bin/ folder.")
+                        print(f"❌ Tools missing.\n   MAFFT: {mafft_exe}\n   FastTree: {fasttree_exe}")
+                        if current_os == "Darwin":
+                            print("   (Note for Mac: Ensure 'mafft' and 'FastTree' are installed via 'brew install mafft fasttree' if portable version fails)")
+
             except Exception as e:
                 print(f"❌ Error in tree building: {e}")
 
