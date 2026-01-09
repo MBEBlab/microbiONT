@@ -8,3 +8,4 @@ flatten_dict
 biopython
 tqdm
 numpy
+NanoPlot
