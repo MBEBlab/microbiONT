@@ -59,7 +59,24 @@ else
 fi
 
 # ==========================================
-# 5. Install Ollama
+# 5. Link NanoPlot to bin
+# ==========================================
+echo -e "${YELLOW}[5/6] Configuring NanoPlot...${NC}"
+mkdir -p bin
+
+VENV_NANOPLOT="$(pwd)/microbiONT_env/bin/NanoPlot"
+
+if [ -f "$VENV_NANOPLOT" ]; then
+    echo "Linking NanoPlot from venv to bin/..."
+    
+    ln -sf "$VENV_NANOPLOT" bin/NanoPlot
+    echo "NanoPlot linked successfully!"
+else
+    echo "Warning: NanoPlot not found in venv. Please check requirements.txt."
+fi
+
+# ==========================================
+# 6. Install Ollama
 # ==========================================
 echo -e "${YELLOW}[5/6] Setting up AI (Ollama)...${NC}"
 if ! command -v ollama &> /dev/null; then
