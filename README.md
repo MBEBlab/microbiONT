@@ -74,7 +74,7 @@ The application interface will automatically open in your default web browser.
 
 Note on Tools
 
-This package includes portable binaries for Samtools, NanoFilt, Porechop, NanoPlot, minimap2, emu, MAFFT, and FastTree in the bin/ directory.
+This package includes portable binaries for Samtools, NanoFilt, Porechop, minimap2, emu, MAFFT, and FastTree in the bin/ directory.
 
 It relies on your system's *Dorado* installation. You can download different versions of Dorado independently and specify the installation path in the app settings if needed.
 
