@@ -1,4 +1,4 @@
-# microbiONT: AI-Driven Nanopore Analysis Platform 
+# microbiONT: an AI-driven, privacy-focused platform for local Nanopore 16S and 18S amplicon analysis
 
 **microbiONT** is a GUI-based application for Oxford Nanopore Technologies (ONT) sequencing analysis, specifically designed for 16S and 18S amplicon studies. It integrates local Large Language Models (LLM) with standard bioinformatics tools to automate workflows from raw signal processing to taxonomy classification.
 
