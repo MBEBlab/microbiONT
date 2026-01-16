@@ -76,7 +76,7 @@ Note on Tools
 
 This package includes portable binaries for Samtools, NanoFilt, Porechop, minimap2, emu, MAFFT, and FastTree in the bin/ directory.
 
-It relies on your system's *Dorado* installation. You can download different versions of Dorado independently and specify the installation path in the app settings if needed.
+It relies on your system's *Dorado* installation. You can download different versions of Dorado independently and specify the installation path in the app settings if needed. If Dorado is not currently installed, the install.sh script will automatically handle the installation for you.
 
 ## Citations
 
@@ -88,7 +88,7 @@ If you use microbiONT for your research, please cite the following tools:
     Porechop: https://github.com/rrwick/Porechop
     NanoPlot: https://doi.org/10.1093/bioinformatics/btad311
     Emu: https://doi.org/10.1038/s41592-022-01520-4
-    MAFFT: https://10.1093/molbev/mst010 
+    MAFFT: https://doi.org/10.1093/molbev/mst010 
     FastTree: https://doi.org/10.1371/journal.pone.0009490
 
 ## Powered by:

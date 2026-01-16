@@ -110,7 +110,7 @@ if [ -f "Modelfile" ]; then
     echo "Creating custom microbiONT expert model..."
     ollama create microbiONT -f Modelfile
 else
-    echo "⚠️ Note: 'Modelfile' not found. Skipping custom model creation."
+    echo "Note: 'Modelfile' not found. Skipping custom model creation."
 fi
 
 # Stop background Ollama

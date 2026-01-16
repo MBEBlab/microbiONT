@@ -53,7 +53,7 @@ if ! command -v emu &> /dev/null; then
     cd ..
     rm -rf temp_emu_install
     
-    echo "✅ Emu installed successfully!"
+    echo "Emu installed successfully!"
 else
     echo "Emu is already installed."
 fi
@@ -84,7 +84,7 @@ if ! command -v ollama &> /dev/null; then
 fi
 
 # ==========================================
-# 6. Setup AI Model
+# 7. Setup AI Model
 # ==========================================
 echo -e "${YELLOW}[6/6] Configuring AI Model...${NC}"
 # Start Ollama in background
@@ -100,7 +100,7 @@ if [ -f "Modelfile" ]; then
     echo "Creating custom microbiONT expert model..."
     ollama create microbiONT -f Modelfile
 else
-    echo "⚠️ Modelfile not found, skipping custom model."
+    echo "Modelfile not found, skipping custom model."
 fi
 
 kill $PID

@@ -436,4 +436,40 @@ Assistant: "**Chimera (嵌合體)** 是 PCR 過程中產生的錯誤序列。
 它發生在兩條不同的 DNA 序列意外接在一起，形成一條自然界不存在的「合成」序列。
 Emu 和 NanoFilt 雖然能處理品質，但嵌合體有時需要專門的工具 (如 VSEARCH) 去除。不過在長讀長 (Long-read) 定序中，如果我們定序的是完整全長 16S，嵌合體辨識會比短讀長容易一些。"
 
+User: "List the available basecalling models"
+User (TW): "列出可用的basecalling models"
+Assistant: "Dorado 可以提供sup hac fast三種模式的models。
+更多詳細的資料請到dorado官方網站查詢 https://software-docs.nanoporetech.com/dorado/latest/models/list/。"
+
+User: "Use the hac model for basecalling to save time."
+User (TW): "使用hac模式做bascalling節省時間"
+Assistant: "已經預設sup模式改為hac，請使用以下指令
+```bash
+dorado basecaller hac pod5/ > calls.bam && samtools fastq calls.bam > calls.fastq
+
+User: "How can I enable duplex basecalling?"
+User (TW): 如何使用duple basealling"
+Assistant: "進入bascalling settings，點開adcanced options，將enable duplex打勾，或者可以使用以下指令
+```bash
+dorado duplex sup pod5/ > duplex_calls.bam && samtools fastq duplex_calls.bam > duplex_calls.fastq
+	
+User: "List all the tools currently installed in microbiONT"
+User (TW): 列出目前microbiONT有安裝的工具"
+Assistant: "Here are the tools currently installed in microbiONT:
+
+    Dorado: Basecalling tool for Nanopore sequencing data.
+    Porechop: Demultiplexing tool to separate reads based on barcode sequences.
+    NanoFilt: Quality filtering and trimming tool for Nanopore sequencing data.
+    NanoPlot: Visualization tool for quality control and analysis of Nanopore sequencing data.
+    Emu: Taxonomy classification tool for 16S/18S rRNA gene sequences.
+    Minimap2: Alignment tool for comparing DNA sequences.
+    MAFFT: Multiple sequence alignment tool.
+    FastTree: Phylogenetic tree inference tool.
+
+Please note that this list may not be exhaustive, as new tools can be added or updated in the future."
+
+User: "Please use the 'fast' model in Guppy for quick results."
+User (TW): "請用guppy中的fast模式更快產生結果"
+Assistant: "Guppy is **no longer supported**. Please use **Dorado** for basecalling. You can use the 'fast' model in Dorado for quick results: `dorado basecaller fast ...`"
+
 """
