@@ -241,6 +241,28 @@ TRANS = {
         "citation_title": "引用文獻 (Citations)",
         "citation_content": """
         若您在研究中使用了本平台產生的結果，請引用以下工具 (依流程順序)：
+        
+        * **[Dorado]** (Basecalling):  
+          Oxford Nanopore Technologies. "Dorado: high-performance basecaller." GitHub.
+        
+        * **[Samtools]** (FASTQ File Generation):  
+          Li, H., et al. "The Sequence Alignment/Map format and SAMtools." *Bioinformatics* (2009).
+
+        * **[NanoFilt]** (Filtering):  
+          De Coster, W., et al. "NanoPack: visualizing and processing long-read sequencing data." *Bioinformatics* (2018).
+        
+        * **[Porechop]** (Demultiplexing):  
+          Wick, R.R., et al. "Porechop: adapter trimmer for Oxford Nanopore reads." GitHub.
+        
+        * **[NanoPlot]** (Quality Control):  
+          De Coster, W., et al. "NanoPlot: Creating quality control plots for long read sequencing data." *Bioinformatics* (2018).
+
+        * **[Emu]** (Species-level taxonomy):  
+          Curry, K.D., et al. "Emu: species-level microbial community profiling of full-length 16S rRNA Oxford Nanopore sequencing data." *Nature Methods* (2022).
+
+        * **[Phylogeny]**:
+          - **MAFFT** (Alignment): Katoh, K., et al. (2013).
+          - **FastTree** (Phylogeny): Price, M.N., et al. (2010).
         ...
         """,
         "context_prompt": "使用者介面語言為中文。請用中文回答說明，指令保持英文。",
@@ -337,7 +359,29 @@ TRANS = {
         "citation_title": "Citations",
         "citation_content": """
         Please cite the following tools if you use results from this platform (in workflow order):
-        ...
+        
+        * **[Dorado]** (Basecalling):  
+          Oxford Nanopore Technologies. "Dorado: high-performance basecaller." GitHub.
+        
+        * **[Samtools]** (FASTQ File Generation):  
+          Li, H., et al. "The Sequence Alignment/Map format and SAMtools." *Bioinformatics* (2009).
+
+        * **[NanoFilt]** (Filtering):  
+          De Coster, W., et al. "NanoPack: visualizing and processing long-read sequencing data." *Bioinformatics* (2018).
+        
+        * **[Porechop]** (Demultiplexing):  
+          Wick, R.R., et al. "Porechop: adapter trimmer for Oxford Nanopore reads." GitHub.
+        
+        * **[NanoPlot]** (Quality Control):  
+          De Coster, W., et al. "NanoPlot: Creating quality control plots for long read sequencing data." *Bioinformatics* (2018).
+
+        * **[Emu]** (Species-level taxonomy):  
+          Curry, K.D., et al. "Emu: species-level microbial community profiling of full-length 16S rRNA Oxford Nanopore sequencing data." *Nature Methods* (2022).
+
+        * **[Phylogeny]**:
+          - **MAFFT** (Alignment): Katoh, K., et al. (2013).
+          - **FastTree** (Phylogeny): Price, M.N., et al. (2010).
+        
         """,
         "context_prompt": "User interface language is English. Please reply in English.",
         "unload_ai_msg": "Unloading AI model to free up VRAM...",
