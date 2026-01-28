@@ -116,8 +116,7 @@ if "params" not in st.session_state:
         "cv_do_ma": True,            # MicrobiomeAnalyst
         "cv_do_pi": False,           # PICRUSt2
         "cv_do_fa": False,           # FAPROTAX
-        "cv_do_tr": False,           # Phylogenetic Tree
-        
+                
         # --- Tab 8: Pipeline ---
         "pipe_start": "Basecalling",
         "pipe_stop": "Format Conversion",
@@ -260,9 +259,6 @@ TRANS = {
         * **[Emu]** (Species-level taxonomy):  
           Curry, K.D., et al. "Emu: species-level microbial community profiling of full-length 16S rRNA Oxford Nanopore sequencing data." *Nature Methods* (2022).
 
-        * **[Phylogeny]**:
-          - **MAFFT** (Alignment): Katoh, K., et al. (2013).
-          - **FastTree** (Phylogeny): Price, M.N., et al. (2010).
         ...
         """,
         "context_prompt": "使用者介面語言為中文。請用中文回答說明，指令保持英文。",
@@ -377,10 +373,6 @@ TRANS = {
 
         * **[Emu]** (Species-level taxonomy):  
           Curry, K.D., et al. "Emu: species-level microbial community profiling of full-length 16S rRNA Oxford Nanopore sequencing data." *Nature Methods* (2022).
-
-        * **[Phylogeny]**:
-          - **MAFFT** (Alignment): Katoh, K., et al. (2013).
-          - **FastTree** (Phylogeny): Price, M.N., et al. (2010).
         
         """,
         "context_prompt": "User interface language is English. Please reply in English.",
@@ -1092,7 +1084,7 @@ with st.sidebar:
         # 3. Output Formats (Persistent Checkboxes)
         st.write("###### Output Formats")
         st.caption("Select output formats to convert results for compatibility with downstream analysis tools")
-        c1, c2, c3, c4 = st.columns(4)
+        c1, c2, c3 = st.columns(3)
         
         new_ma = c1.checkbox("MicrobiomeAnalyst", value=p["cv_do_ma"])
         if new_ma != p["cv_do_ma"]: st.session_state.params["cv_do_ma"] = new_ma
@@ -1102,9 +1094,6 @@ with st.sidebar:
         
         new_fa = c3.checkbox("FAPROTAX", value=p["cv_do_fa"])
         if new_fa != p["cv_do_fa"]: st.session_state.params["cv_do_fa"] = new_fa
-        
-        new_tr = c4.checkbox("Phylogenetic Tree", value=p["cv_do_tr"])
-        if new_tr != p["cv_do_tr"]: st.session_state.params["cv_do_tr"] = new_tr
 
         st.markdown("---")
 
@@ -1125,7 +1114,6 @@ with st.sidebar:
                     if p["cv_do_ma"]: py_args += " --ma"
                     if p["cv_do_pi"]: py_args += " --picrust"
                     if p["cv_do_fa"]: py_args += " --faprotax"
-                    if p["cv_do_tr"]: py_args += " --tree"
                     
                     cmd = f"mkdir -p {p['cv_out']} && python3 post_process.py {py_args}"
                     st.session_state.messages.append({"role": "assistant", "type": "terminal", "content": auto_fix_command(cmd)})
@@ -1326,7 +1314,6 @@ with st.sidebar:
                         if p["cv_do_ma"]: py_args += " --ma"
                         if p["cv_do_pi"]: py_args += " --picrust"
                         if p["cv_do_fa"]: py_args += " --faprotax"
-                        if p["cv_do_tr"]: py_args += " --tree"
                         
                         cmds.append(f"echo 'Starting Post-Processing...' && python3 post_process.py {py_args}")
 
