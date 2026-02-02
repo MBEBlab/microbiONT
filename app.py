@@ -518,16 +518,16 @@ with st.sidebar:
     
     def update_language():
         selected = st.session_state.lang_radio_key
-        if selected == "中文":
-            st.session_state.lang = "zh"
-        else:
+        if selected == "English":
             st.session_state.lang = "en"
+        else:
+            st.session_state.lang = "zh"
 
     st.radio(
         t("lang_select"), 
-        ["中文", "English"], 
+        ["English", "中文"], 
         horizontal=True, 
-        index=0 if st.session_state.lang == "zh" else 1,
+        index=0 if st.session_state.lang == "en" else 1,
         key="lang_radio_key",       
         on_change=update_language  
     )
