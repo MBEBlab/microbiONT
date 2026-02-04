@@ -29,22 +29,28 @@ The application runs **entirely locally**, utilizing your GPU for processing, en
 ## Installation
 
 1.  **Download** the `microbiONT_linux.zip` or `microbiONT_macOS.zip` package from the [Releases page](#).
-2.  **Extract** the `microbiONT_linux.zip` or `microbiONT_macOS.zip` file.
+2.  **Extract** the downloaded zip file.
 3.  **OPEN** a terminal application. 
-4.  **Enter** the extracted microbiONT folder.
+4.  **Navigate** to the extracted microbiONT folder.
 3.  **Run the installation script** (This only needs to be done once to set up the environment and AI model):
 
 For Linux Users
     
 ```bash
-cd path/microbiONT #use terminal into the microbiONT folder
+# Navigate to the microbiONT directory (replace path/to/ with actual location)
+cd path/to/microbiONT
+
+# Grant execution permissions and install
 chmod +x install.sh run.sh
 ./install.sh
 ```
 For macOS Users
     
 ```bash
-cd path/microbiONT #use terminal into the microbiONT folder
+# Navigate to the microbiONT directory (replace path/to/ with actual location)
+cd path/to/microbiONT
+
+# Grant execution permissions and install
 chmod +x install_macOS.sh run.sh
 ./install_macOS.sh
 ```    
@@ -69,11 +75,14 @@ We provide a curated selection of databases for immediate use:
   
 ## Usage
 
-Start the application by running the launch script:
+Open your terminal and execute the following commands to launch **microbiONT**:
 
 ```bash
-cd path/microbiONT #use terminal into the microbiONT folder
-./run.sh
+# Navigate to the microbiONT directory (replace path/to/ with actual location)
+cd path/to/microbiONT
+
+#Run the startup script
+./run.sh 
 ```
 The application interface will automatically open in your default web browser.
 
