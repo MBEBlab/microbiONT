@@ -9,6 +9,67 @@ NC='\033[0m'
 echo -e "${GREEN}=== microbiONT Installation Setup (macOS) ===${NC}"
 
 # ==========================================
+# Install Dorado (Smart Mac Detection)
+# ==========================================
+echo -e "${YELLOW}[Extra] Checking Dorado configuration...${NC}"
+
+mkdir -p bin
+
+SYSTEM_DORADO=""
+NEED_DOWNLOAD=false
+
+if command -v dorado &> /dev/null; then
+    SYSTEM_DORADO=$(command -v dorado)
+    echo -e "${GREEN}Found system Dorado at: $SYSTEM_DORADO${NC}"
+else
+    echo "System Dorado not found. Proceeding to automatic installation..."
+    NEED_DOWNLOAD=true
+fi
+
+
+if [ "$NEED_DOWNLOAD" = false ]; then
+    echo "Linking system Dorado to local bin..."
+    ln -sf "$SYSTEM_DORADO" bin/dorado
+    
+else
+    cd bin
+
+    if [ -d "dorado_pkg" ] || [ -L "dorado" ]; then
+        rm -rf dorado dorado_pkg dorado-*.tar.gz
+    fi
+
+    ARCH=$(uname -m)
+    DOWNLOAD_URL=""
+    
+    if [[ "$ARCH" == "arm64" ]]; then
+        echo -e "${GREEN}Detected Apple Silicon (M1/M2/M3)${NC}"
+        DOWNLOAD_URL="https://cdn.oxfordnanoportal.com/software/analysis/dorado-1.1.1-osx-arm64.tar.gz"
+    else
+        echo -e "${GREEN}Detected Intel Mac${NC}"
+        DOWNLOAD_URL="https://cdn.oxfordnanoportal.com/software/analysis/dorado-1.1.1-osx-x64.tar.gz"
+    fi
+
+    echo "Downloading from: $DOWNLOAD_URL"
+    curl -L "$DOWNLOAD_URL" -o dorado_download.tar.gz --progress-bar
+
+    echo "Extracting..."
+    tar -xf dorado_download.tar.gz
+
+    EXTRACTED_DIR=$(tar -tf dorado_download.tar.gz | head -1 | cut -f1 -d"/")
+    mv "$EXTRACTED_DIR" dorado_pkg
+ 
+    echo "Unlocking macOS security restrictions..."
+    xattr -r -d com.apple.quarantine dorado_pkg 2>/dev/null || true
+ 
+    ln -sf dorado_pkg/bin/dorado dorado
+    
+    rm dorado_download.tar.gz
+    cd ..
+fi
+
+echo "✅ Dorado setup complete!"
+
+# ==========================================
 # 1. Check Homebrew
 # ==========================================
 echo -e "${YELLOW}[1/6] Checking Homebrew...${NC}"
@@ -22,8 +83,8 @@ fi
 # 2. Install System Tools (Minimap2 is crucial for Emu)
 # ==========================================
 echo -e "${YELLOW}[2/6] Installing Biology Tools...${NC}"
-echo "Installing python3, samtools, mafft, fasttree, minimap2, git..."
-brew install python3 samtools mafft fasttree minimap2 git wget
+echo "Installing python3, samtools, minimap2, git..."
+brew install python3 samtools minimap2 git wget
 
 # ==========================================
 # 3. Setup Python Environment

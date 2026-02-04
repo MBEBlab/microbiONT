@@ -8,16 +8,77 @@ NC='\033[0m' # No Color
 echo -e "${GREEN}=== microbiONT Installation Setup (Linux) ===${NC}"
 
 # ==========================================
+# Install Dorado (Smart Detection)
+# ==========================================
+echo -e "${YELLOW}[Extra] Checking Dorado configuration...${NC}"
+
+mkdir -p bin
+
+SYSTEM_DORADO=""
+NEED_DOWNLOAD=false
+
+if command -v dorado &> /dev/null; then
+    SYSTEM_DORADO=$(command -v dorado)
+    echo -e "${GREEN}Found system Dorado at: $SYSTEM_DORADO${NC}"
+elif [ -f "/opt/ont/dorado/bin/dorado" ]; then
+    SYSTEM_DORADO="/opt/ont/dorado/bin/dorado"
+    echo -e "${GREEN}Found Dorado at default path: $SYSTEM_DORADO${NC}"
+else
+    echo "System Dorado not found. Proceeding to automatic installation..."
+    NEED_DOWNLOAD=true
+fi
+
+if [ "$NEED_DOWNLOAD" = false ]; then
+
+    echo "Linking system Dorado to local bin..."
+    ln -sf "$SYSTEM_DORADO" bin/dorado
+    
+else
+    cd bin
+
+    if [ -d "dorado_pkg" ] || [ -L "dorado" ]; then
+        rm -rf dorado dorado_pkg dorado-*.tar.gz
+    fi
+
+    echo "Fetching latest release URL from GitHub..."
+    LATEST_URL=$(curl -sL https://api.github.com/repos/nanoporetech/dorado/releases/latest \
+    | grep "browser_download_url" \
+    | grep "linux-x64.tar.gz" \
+    | cut -d '"' -f 4)
+
+    if [ -z "$LATEST_URL" ]; then
+        echo -e "${YELLOW}GitHub API failed. Switching to fallback version.${NC}"
+        LATEST_URL="https://cdn.oxfordnanoportal.com/software/analysis/dorado-1.1.1-linux-x64.tar.gz"
+    fi
+
+    echo "Downloading from: $LATEST_URL"
+    wget -q --show-progress "$LATEST_URL" -O dorado_download.tar.gz
+
+    echo "Extracting..."
+    tar -xf dorado_download.tar.gz
+
+    EXTRACTED_DIR=$(tar -tf dorado_download.tar.gz | head -1 | cut -f1 -d"/")
+    mv "$EXTRACTED_DIR" dorado_pkg
+
+    ln -sf dorado_pkg/bin/dorado dorado
+    
+    rm dorado_download.tar.gz
+    cd ..
+fi
+
+echo "✅ Dorado setup complete!"
+
+# ==========================================
 # 1. Install System Biology Tools 
 # ==========================================
 echo -e "${YELLOW}[1/5] Checking System Dependencies...${NC}"
-echo "Installing biology tools (Samtools, MAFFT, FastTree, Minimap2)..."
+echo "Installing biology tools (Samtools, Minimap2)..."
 
 
 if [ -x "$(command -v apt-get)" ]; then
     
     sudo apt-get update
-    sudo apt-get install -y samtools mafft fasttree minimap2
+    sudo apt-get install -y samtools minimap2
 else
     echo -e "${YELLOW}Warning: 'apt-get' not found.${NC}"
     echo "Using portable binaries in 'bin/' folder as fallback."

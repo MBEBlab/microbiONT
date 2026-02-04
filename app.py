@@ -258,7 +258,10 @@ TRANS = {
 
         * **[Emu]** (Species-level taxonomy):  
           Curry, K.D., et al. "Emu: species-level microbial community profiling of full-length 16S rRNA Oxford Nanopore sequencing data." *Nature Methods* (2022).
-
+                  
+        * **[MZGdb]** (18S rRNA gene database):  
+          Bucklin, A., et al. "Toward a global reference database of COI barcodes for marine zooplankton." *Marine Biology* (2021).
+          
         ...
         """,
         "context_prompt": "使用者介面語言為中文。請用中文回答說明，指令保持英文。",
@@ -373,7 +376,10 @@ TRANS = {
 
         * **[Emu]** (Species-level taxonomy):  
           Curry, K.D., et al. "Emu: species-level microbial community profiling of full-length 16S rRNA Oxford Nanopore sequencing data." *Nature Methods* (2022).
-        
+                          
+        * **[MZGdb]** (18S rRNA gene database):  
+          Bucklin, A., et al. "Toward a global reference database of COI barcodes for marine zooplankton." *Marine Biology* (2021).
+          
         """,
         "context_prompt": "User interface language is English. Please reply in English.",
         "unload_ai_msg": "Unloading AI model to free up VRAM...",
