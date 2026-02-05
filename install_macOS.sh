@@ -6,7 +6,7 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo -e "${GREEN}=== microbiONT Setup (Apple Silicon Only) ===${NC}"
+echo -e "${GREEN}=== microbiONT Setup (macOS Metal Fix) ===${NC}"
 
 # ==========================================
 # 0. Clean up
@@ -16,17 +16,16 @@ rm -rf bin microbiONT_env temp_emu_install temp_porechop dorado.zip dorado_pkg d
 mkdir -p bin
 
 # ==========================================
-# 1. Check Architecture (Intel Check)
+# 1. Check Architecture
 # ==========================================
 ARCH=$(uname -m)
 if [[ "$ARCH" != "arm64" ]]; then
-    echo -e "${RED}Error: This installation script supports Apple Silicon (M1/M2/M3) Macs only.${NC}"
-    echo "Detected architecture: $ARCH (Intel)"
+    echo -e "${RED}Error: This script is for Apple Silicon (M1/M2/M3) only.${NC}"
     exit 1
 fi
 
 # ==========================================
-# 2. Install System Tools (Python 3.11)
+# 2. Install System Tools
 # ==========================================
 echo -e "${YELLOW}[1/7] Installing System Tools...${NC}"
 if ! command -v brew &> /dev/null; then
@@ -48,7 +47,7 @@ if [ -f "$(brew --prefix)/bin/python3.11" ]; then
 elif command -v python3.11 &> /dev/null; then
     PYTHON_EXEC=$(command -v python3.11)
 else
-    echo -e "${RED}Error: Python 3.11 failed. Run 'brew install python@3.11'${NC}"
+    echo -e "${RED}Error: Python 3.11 failed.${NC}"
     exit 1
 fi
 
@@ -101,7 +100,7 @@ if [ -f "$VENV_BIN/NanoFilt" ]; then ln -sf "$VENV_BIN/NanoFilt" bin/NanoFilt; f
 if [ -f "$VENV_BIN/porechop" ]; then ln -sf "$VENV_BIN/porechop" bin/porechop; fi
 
 # ==========================================
-# 7. Install Dorado (Apple Silicon Specific)
+# 7. Install Dorado
 # ==========================================
 echo -e "${YELLOW}[6/7] Installing Dorado (v1.1.1 arm64)...${NC}"
 
@@ -122,16 +121,22 @@ else
         unzip -q dorado.zip
         
         if [ -d "$DIR_NAME" ]; then
-            mv "$DIR_NAME/bin/dorado" .
+            mv "$DIR_NAME/bin/"* .
             
             if [ -d "$DIR_NAME/lib" ]; then cp -r "$DIR_NAME/lib" .; fi
             
             xattr -r -d com.apple.quarantine dorado 2>/dev/null || true
+            xattr -r -d com.apple.quarantine *.metallib 2>/dev/null || true
             
             rm -rf dorado.zip "$DIR_NAME" __MACOSX
             chmod +x dorado
             
             echo "Verifying Dorado installation:"
+            if [ -f "libdorado.metallib" ]; then
+                echo "✅ GPU Driver (metallib) found."
+            else
+                echo -e "${RED}⚠️ Warning: metallib file missing!${NC}"
+            fi
             ./dorado --version
             
             echo "✅ Dorado installed."
