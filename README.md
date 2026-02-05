@@ -28,7 +28,7 @@ The application runs **entirely locally**, utilizing your GPU for processing, en
 
 ## Installation
 
-1.  **Download** the `microbiONT_linux.zip` or `microbiONT_macOS.zip` package from the [Releases page](#).
+1.  **Download** the `microbiONT_linux.zip` or `microbiONT_macOS.zip` package from the [Releases page](https://github.com/MBEBlab/microbiONT/releases).
 2.  **Extract** the downloaded zip file.
 3.  **OPEN** a terminal application. 
 4.  **Navigate** to the extracted microbiONT folder.
