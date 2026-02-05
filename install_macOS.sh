@@ -6,170 +6,157 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo -e "${GREEN}=== microbiONT Installation Setup (macOS) ===${NC}"
+echo -e "${GREEN}=== microbiONT Setup (Apple Silicon Only) ===${NC}"
 
 # ==========================================
-# Install Dorado (Smart Mac Detection)
+# 0. Clean up
 # ==========================================
-echo -e "${YELLOW}[Extra] Checking Dorado configuration...${NC}"
-
+echo -e "${YELLOW}[0/7] Cleaning up...${NC}"
+rm -rf bin microbiONT_env temp_emu_install temp_porechop dorado.zip dorado_pkg dorado
 mkdir -p bin
 
-SYSTEM_DORADO=""
-NEED_DOWNLOAD=false
-
-if command -v dorado &> /dev/null; then
-    SYSTEM_DORADO=$(command -v dorado)
-    echo -e "${GREEN}Found system Dorado at: $SYSTEM_DORADO${NC}"
-else
-    echo "System Dorado not found. Proceeding to automatic installation..."
-    NEED_DOWNLOAD=true
-fi
-
-
-if [ "$NEED_DOWNLOAD" = false ]; then
-    echo "Linking system Dorado to local bin..."
-    ln -sf "$SYSTEM_DORADO" bin/dorado
-    
-else
-    cd bin
-
-    if [ -d "dorado_pkg" ] || [ -L "dorado" ]; then
-        rm -rf dorado dorado_pkg dorado-*.tar.gz
-    fi
-
-    ARCH=$(uname -m)
-    DOWNLOAD_URL=""
-    
-    if [[ "$ARCH" == "arm64" ]]; then
-        echo -e "${GREEN}Detected Apple Silicon (M1/M2/M3)${NC}"
-        DOWNLOAD_URL="https://cdn.oxfordnanoportal.com/software/analysis/dorado-1.1.1-osx-arm64.tar.gz"
-    else
-        echo -e "${GREEN}Detected Intel Mac${NC}"
-        DOWNLOAD_URL="https://cdn.oxfordnanoportal.com/software/analysis/dorado-1.1.1-osx-x64.tar.gz"
-    fi
-
-    echo "Downloading from: $DOWNLOAD_URL"
-    curl -L "$DOWNLOAD_URL" -o dorado_download.tar.gz --progress-bar
-
-    echo "Extracting..."
-    tar -xf dorado_download.tar.gz
-
-    EXTRACTED_DIR=$(tar -tf dorado_download.tar.gz | head -1 | cut -f1 -d"/")
-    mv "$EXTRACTED_DIR" dorado_pkg
- 
-    echo "Unlocking macOS security restrictions..."
-    xattr -r -d com.apple.quarantine dorado_pkg 2>/dev/null || true
- 
-    ln -sf dorado_pkg/bin/dorado dorado
-    
-    rm dorado_download.tar.gz
-    cd ..
-fi
-
-echo "✅ Dorado setup complete!"
-
 # ==========================================
-# 1. Check Homebrew
+# 1. Check Architecture (Intel Check)
 # ==========================================
-echo -e "${YELLOW}[1/6] Checking Homebrew...${NC}"
-if ! command -v brew &> /dev/null; then
-    echo -e "${RED}Error: Homebrew not found.${NC}"
-    echo "Please install Homebrew first: /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+ARCH=$(uname -m)
+if [[ "$ARCH" != "arm64" ]]; then
+    echo -e "${RED}Error: This installation script supports Apple Silicon (M1/M2/M3) Macs only.${NC}"
+    echo "Detected architecture: $ARCH (Intel)"
     exit 1
 fi
 
 # ==========================================
-# 2. Install System Tools (Minimap2 is crucial for Emu)
+# 2. Install System Tools (Python 3.11)
 # ==========================================
-echo -e "${YELLOW}[2/6] Installing Biology Tools...${NC}"
-echo "Installing python3, samtools, minimap2, git..."
-brew install python3 samtools minimap2 git wget
+echo -e "${YELLOW}[1/7] Installing System Tools...${NC}"
+if ! command -v brew &> /dev/null; then
+    echo -e "${RED}Error: Homebrew not found.${NC}"
+    exit 1
+fi
+
+echo "Installing Python 3.11 & dependencies..."
+brew install python@3.11 samtools minimap2 git wget ollama unzip
 
 # ==========================================
 # 3. Setup Python Environment
 # ==========================================
-echo -e "${YELLOW}[3/6] Setting up Python...${NC}"
-if [ ! -d "microbiONT_env" ]; then
-    python3 -m venv microbiONT_env
+echo -e "${YELLOW}[2/7] Creating Virtual Env (Python 3.11)...${NC}"
+
+PYTHON_EXEC=""
+if [ -f "$(brew --prefix)/bin/python3.11" ]; then
+    PYTHON_EXEC="$(brew --prefix)/bin/python3.11"
+elif command -v python3.11 &> /dev/null; then
+    PYTHON_EXEC=$(command -v python3.11)
+else
+    echo -e "${RED}Error: Python 3.11 failed. Run 'brew install python@3.11'${NC}"
+    exit 1
 fi
+
+echo "Using: $PYTHON_EXEC"
+$PYTHON_EXEC -m venv microbiONT_env
 source microbiONT_env/bin/activate
-pip3 install --upgrade pip
-pip3 install -r requirements.txt
+pip install --upgrade pip
+
+echo "Installing Python libs..."
+pip install streamlit streamlit-option-menu pandas requests pillow pysam flatten_dict biopython tqdm numpy NanoPlot NanoFilt
 
 # ==========================================
-# 4. Install Emu from Source (Mac Special)
+# 4. Install Porechop
 # ==========================================
-echo -e "${YELLOW}[4/6] Installing Emu (Taxonomy Tool)...${NC}"
+echo -e "${YELLOW}[3/7] Installing Porechop...${NC}"
+if ! pip show porechop &> /dev/null; then
+    git clone https://github.com/rrwick/Porechop.git temp_porechop
+    cd temp_porechop
+    pip install .
+    cd ..
+    rm -rf temp_porechop
+else
+    echo "Porechop already installed."
+fi
 
-if ! command -v emu &> /dev/null; then
-    echo "Downloading Emu source code..."
-    
+# ==========================================
+# 5. Install Emu
+# ==========================================
+echo -e "${YELLOW}[4/7] Installing Emu...${NC}"
+if ! pip show emu &> /dev/null; then
     git clone https://gitlab.com/treangenlab/emu.git temp_emu_install
-       
     cd temp_emu_install
-    echo "Installing Emu into virtual environment..."
-    pip3 install .
-        
+    pip install .
     cd ..
     rm -rf temp_emu_install
-    
-    echo "Emu installed successfully!"
 else
-    echo "Emu is already installed."
+    echo "Emu installed."
 fi
 
 # ==========================================
-# 5. Link NanoPlot to bin
+# 6. Link Tools
 # ==========================================
-echo -e "${YELLOW}[5/6] Configuring NanoPlot...${NC}"
-mkdir -p bin
+echo -e "${YELLOW}[5/7] Linking binaries...${NC}"
+ln -sf $(which samtools) bin/samtools
+ln -sf $(which minimap2) bin/minimap2
 
-VENV_NANOPLOT="$(pwd)/microbiONT_env/bin/NanoPlot"
+VENV_BIN="$(pwd)/microbiONT_env/bin"
+if [ -f "$VENV_BIN/NanoPlot" ]; then ln -sf "$VENV_BIN/NanoPlot" bin/NanoPlot; fi
+if [ -f "$VENV_BIN/NanoFilt" ]; then ln -sf "$VENV_BIN/NanoFilt" bin/NanoFilt; fi
+if [ -f "$VENV_BIN/porechop" ]; then ln -sf "$VENV_BIN/porechop" bin/porechop; fi
 
-if [ -f "$VENV_NANOPLOT" ]; then
-    echo "Linking NanoPlot from venv to bin/..."
-    
-    ln -sf "$VENV_NANOPLOT" bin/NanoPlot
-    echo "NanoPlot linked successfully!"
+# ==========================================
+# 7. Install Dorado (Apple Silicon Specific)
+# ==========================================
+echo -e "${YELLOW}[6/7] Installing Dorado (v1.1.1 arm64)...${NC}"
+
+if command -v dorado &> /dev/null; then
+    echo "Found system Dorado, linking..."
+    ln -sf $(command -v dorado) bin/dorado
 else
-    echo "Warning: NanoPlot not found in venv. Please check requirements.txt."
+    cd bin
+    
+    DORADO_URL="https://cdn.oxfordnanoportal.com/software/analysis/dorado-1.1.1-osx-arm64.zip"
+    DIR_NAME="dorado-1.1.1-osx-arm64"
+
+    echo "Downloading from: $DORADO_URL"
+    curl -L "$DORADO_URL" -o dorado.zip --progress-bar
+
+    if [ -f "dorado.zip" ]; then
+        echo "Extracting ZIP..."
+        unzip -q dorado.zip
+        
+        if [ -d "$DIR_NAME" ]; then
+            mv "$DIR_NAME/bin/dorado" .
+            
+            if [ -d "$DIR_NAME/lib" ]; then cp -r "$DIR_NAME/lib" .; fi
+            
+            xattr -r -d com.apple.quarantine dorado 2>/dev/null || true
+            
+            rm -rf dorado.zip "$DIR_NAME" __MACOSX
+            chmod +x dorado
+            
+            echo "Verifying Dorado installation:"
+            ./dorado --version
+            
+            echo "✅ Dorado installed."
+        else
+            echo -e "${RED}Extraction failed. Expected folder '$DIR_NAME' not found.${NC}"
+        fi
+    else
+        echo -e "${RED}Download failed.${NC}"
+    fi
+    cd ..
 fi
 
 # ==========================================
-# 6. Install Ollama
+# 8. Configure AI
 # ==========================================
-echo -e "${YELLOW}[5/6] Setting up AI (Ollama)...${NC}"
-if ! command -v ollama &> /dev/null; then
-    brew install ollama
+echo -e "${YELLOW}[7/7] Configuring AI...${NC}"
+if ! pgrep -x "ollama" > /dev/null; then
+    ollama serve > /dev/null 2>&1 &
+    PID=$!
+    echo "Waiting for Ollama..."
+    sleep 5
 fi
 
-# ==========================================
-# 7. Setup AI Model
-# ==========================================
-echo -e "${YELLOW}[6/6] Configuring AI Model...${NC}"
-# Start Ollama in background
-ollama serve > /dev/null 2>&1 &
-PID=$!
-echo "Waiting for Ollama to start..."
-sleep 5
-
-echo "Pulling base model (llama3.1)..."
 ollama pull llama3.1
-
-if [ -f "Modelfile" ]; then
-    echo "Creating custom microbiONT expert model..."
-    ollama create microbiONT -f Modelfile
-else
-    echo "Modelfile not found, skipping custom model."
-fi
-
-kill $PID
+if [ -f "Modelfile" ]; then ollama create microbiONT -f Modelfile; fi
 
 echo -e "${GREEN}=== Installation Complete! ===${NC}"
-echo "IMPORTANT for Mac Users:"
-echo "1. This app uses system tools installed via Homebrew."
-echo "2. Please manually download 'Dorado for macOS' from GitHub if you need basecalling."
-echo "   (Set the path in the app's Basecalling tab)"
-echo ""
-echo "Run the app using: ./run.sh"
+echo "Run using: ./run.sh"
