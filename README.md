@@ -56,7 +56,7 @@ We provide a curated selection of databases for immediate use:
   * `emu_default`: Default Emu database.
   * `16S_NCBI`: NCBI 16S RefSeq collection.
 * **18S rRNA**:
-  * `18S_Invertebrates` & `18S_C_P_P`: Sourced from the MetaZooGene Barcode Atlas and Database (MZGdb), covering Chromista, Plantae, and Protozoa.
+  * `18S_Invertebrates` & `18S_C_P_P`: Sourced from the MetaZooGene Barcode Atlas and Database (MZGdb), `18S_C_P_P covering Chromista, Plantae, and Protozoa.
   
 ## Usage
 
