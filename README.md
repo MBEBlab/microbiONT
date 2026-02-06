@@ -24,7 +24,6 @@ The application runs **entirely locally**, utilizing your GPU for processing, en
 * **Hardware:** * **GPU:** At least NVIDIA GPU with **VRAM 6GB+** (Required for AI model).
     * **Storage:** At least 10GB free space.
 * **Dorado:** Must be installed (usually via **MinKNOW** or standalone).
-* **Homebrew:** Required for **macOS** users only.
 
 ## Installation
 
