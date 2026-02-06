@@ -20,7 +20,7 @@ The application runs **entirely locally**, utilizing your GPU for processing, en
 
 ## Prerequisites
 
-* **OS:** Linux (Ubuntu 22.04+ recommended), Windows 10/11 (via WSL2), or macOS (Beta)
+* **OS:** Linux (Ubuntu 22.04+ recommended) and Windows 10/11 (via WSL2)
 * **Hardware:** * **GPU:** At least NVIDIA GPU with **VRAM 6GB+** (Required for AI model).
     * **Storage:** At least 10GB free space.
 * **Dorado:** Must be installed (usually via **MinKNOW** or standalone).
@@ -28,14 +28,12 @@ The application runs **entirely locally**, utilizing your GPU for processing, en
 
 ## Installation
 
-1.  **Download** the `microbiONT_linux.zip` or `microbiONT_macOS.zip` package from the [Releases page](https://github.com/MBEBlab/microbiONT/releases).
+1.  **Download** the `microbiONT_version.zip` package from the [Releases page](https://github.com/MBEBlab/microbiONT/releases).
 2.  **Extract** the downloaded zip file.
 3.  **OPEN** a terminal application. 
 4.  **Navigate** to the extracted microbiONT folder.
 3.  **Run the installation script** (This only needs to be done once to set up the environment and AI model):
-
-For Linux Users
-    
+   
 ```bash
 # Navigate to the microbiONT directory (replace path/to/ with actual location)
 cd path/to/microbiONT
@@ -43,19 +41,7 @@ cd path/to/microbiONT
 # Grant execution permissions and install
 chmod +x install.sh run.sh
 ./install.sh
-```
-For macOS Users
-    
-```bash
-# Navigate to the microbiONT directory (replace path/to/ with actual location)
-cd path/to/microbiONT
-
-# Grant execution permissions and install
-chmod +x install_macOS.sh run.sh
-./install_macOS.sh
-```    
-IMPORTANT: The macOS version is currently in BETA. It relies on system-level dependencies (Homebrew), and full stability is not guaranteed across all macOS versions.
-    	
+```        	
 ## Database Setup (Optional)
 
 To use the **Taxonomy (Emu)** module, reference databases must be configured. **microbiONT** comes with pre-configured databases located in the `emu_db/` directory, so no immediate action is required for standard usage.
@@ -97,7 +83,7 @@ The application interface will automatically open in your default web browser.
 
 Note on Tools
 
-The Linux version package includes portable binaries for Samtools, NanoFilt, Porechop, minimap2, and emu in the bin/ directory.It relies on your system's *Dorado* installation. You can download different versions of Dorado independently and specify the installation path in the app settings if needed. If Dorado is not currently installed, the install.sh script will automatically handle the installation for you.
+This package includes portable binaries for Samtools, NanoFilt, Porechop, minimap2, and emu in the bin/ directory.It relies on your system's *Dorado* installation. You can download different versions of Dorado independently and specify the installation path in the app settings if needed. If Dorado is not currently installed, the install.sh script will automatically handle the installation for you.
 
 ## Citations
 
