@@ -1315,7 +1315,7 @@ with st.sidebar:
                     if "emu_db" not in conv_db_path and not os.path.isabs(conv_db_path):
                          conv_db_path = os.path.join(os.getcwd(), "emu_db", conv_db_path)
 
-                    if any([p["cv_do_ma"], p["cv_do_pi"], p["cv_do_fa"], p["cv_do_tr"]]):
+                    if any([p["cv_do_ma"], p["cv_do_pi"], p["cv_do_fa"]]):
                         py_args = f"-i {p['tax_out']} -o {p['cv_out']} -d {conv_db_path}"
                         if p["cv_do_ma"]: py_args += " --ma"
                         if p["cv_do_pi"]: py_args += " --picrust"
